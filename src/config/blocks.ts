@@ -38,7 +38,7 @@ export const allBlocksList = [
   AccordionBlock,
   ButtonBlock,
   CarouselBlock,
-  // CTABlock,
+  CTABlock,
   // FeaturesSectionBlock,
   FormBlock,
   // GapBlock,

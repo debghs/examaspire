@@ -69,6 +69,7 @@ export interface Config {
     accordion: AccordionBlock;
     button: ButtonBlock;
     carousel: CarouselBlock;
+    cta: CTABlock;
     formBlock: FormBlock;
     heading: HeadingBlock;
     paragraph: ParagraphBlock;
@@ -335,6 +336,24 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTABlock".
+ */
+export interface CTABlock {
+  content: {
+    title: string;
+    description?: string | null;
+    button: {
+      text: string;
+      link: string;
+    };
+  };
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -607,7 +626,7 @@ export interface ParagraphBlock {
 export interface Page {
   id: number;
   title: string;
-  blocks: (AccordionBlock | ButtonBlock | CarouselBlock | FormBlock | HeadingBlock | ParagraphBlock)[];
+  blocks: (AccordionBlock | ButtonBlock | CarouselBlock | CTABlock | FormBlock | HeadingBlock | ParagraphBlock)[];
   publishedAt?: string | null;
   slug?: string | null;
   slugLock?: boolean | null;
@@ -1057,6 +1076,7 @@ export interface PagesSelect<T extends boolean = true> {
         accordion?: T | AccordionBlockSelect<T>;
         button?: T | ButtonBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
+        cta?: T | CTABlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         heading?: T | HeadingBlockSelect<T>;
         paragraph?: T | ParagraphBlockSelect<T>;
@@ -1196,6 +1216,27 @@ export interface CarouselBlockSelect<T extends boolean = true> {
         aspectRatio?: T;
         alignment?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTABlock_select".
+ */
+export interface CTABlockSelect<T extends boolean = true> {
+  content?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        button?:
+          | T
+          | {
+              text?: T;
+              link?: T;
+            };
+      };
+  image?: T;
   id?: T;
   blockName?: T;
 }
