@@ -31,9 +31,9 @@ export const Results: CollectionConfig = {
   },
   fields: [
     {
-      name: 'examPaper',
+      name: 'exam',
       type: 'relationship',
-      relationTo: 'exam-papers',
+      relationTo: 'exams',
       required: true,
     },
     {
@@ -90,8 +90,8 @@ export const Results: CollectionConfig = {
       },
       hooks: {
         beforeChange: [({ data }) => {
-          if (data.examPaper && data.student) {
-            return `${data.examPaper.title} - ${data.student.name}`
+          if (data.exam && data.student) {
+            return `${data.exam.title} - ${data.student.name}`
           }
           return 'Untitled Result'
         }],

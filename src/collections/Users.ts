@@ -90,6 +90,12 @@ const Users: CollectionConfig = {
         update: isAdminFieldLevel,
       },
     },
+    {
+      name: 'tags',
+      type: 'relationship',
+      relationTo: 'tags',
+      hasMany: true,
+    },
   ],
   hooks: {
     afterLogin: [

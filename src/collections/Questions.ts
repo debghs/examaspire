@@ -144,6 +144,12 @@ export const Questions: CollectionConfig = {
       },
     },
     createdByField,
+    {
+      name: 'tags',
+      type: 'relationship',
+      relationTo: 'tags',
+      hasMany: true,
+    },
   ],
   hooks: {
     afterChange: [createRevalidateHook((doc) => [`/questions`, `/questions/${doc.id}`])],

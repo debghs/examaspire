@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-white dark:bg-black">
       <HeroSection 
-        backgroundImage="/images/study-background.jpg"
+        backgroundImage=""
         title="Ace Your Exams with Confidence"
         subtitle="Experience seamless online testing with instant results and comprehensive performance analysis. Join thousands of students preparing smarter."
         linkHref="/exams"

@@ -20,8 +20,8 @@ import { BollywoodMedia } from '@/collections/BollywoodMedia'
 import { Exams } from '@/collections/Exams'
 import { Questions } from '@/collections/Questions'
 import { Results } from '@/collections/Results'
-import { ExamPapers } from '@/collections/ExamPapers'
 import { Submissions } from '@/collections/Submissions'
+import { Tags } from '@/collections/Tags'
 
 
 // const groupCollections = (group: string, collections: CollectionConfig[]): CollectionConfig[] => {
@@ -55,8 +55,8 @@ export const collectionsList = [
   Questions,
   Exams,
   Results,
-  ExamPapers,
   Submissions,
+  Tags
   // ...groupCollections('Hindi Music', BollywoodCollections),
   // ...groupCollections('Classical', ClassicalCollections),
   // ...groupCollections('Teaching Videos', VideosCollections),

@@ -88,6 +88,12 @@ export const Exams: CollectionConfig = {
       },
     },
     createdByField,
+    {
+      name: 'tags',
+      type: 'relationship',
+      relationTo: 'tags',
+      hasMany: true,
+    },
   ],
   hooks: {
     afterChange: [createRevalidateHook((doc) => [`/exams`, `/exams/${doc.id}`])],

@@ -31,9 +31,9 @@ export const Submissions: CollectionConfig = {
   },
   fields: [
     {
-      name: 'examPaper',
+      name: 'exam',
       type: 'relationship',
-      relationTo: 'exam-papers',
+      relationTo: 'exams',
       required: true,
     },
     {

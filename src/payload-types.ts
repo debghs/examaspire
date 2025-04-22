@@ -81,8 +81,8 @@ export interface Config {
     questions: Question;
     exams: Exam;
     results: Result;
-    'exam-papers': ExamPaper;
     submissions: Submission;
+    tags: Tag;
     search: Search;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -99,8 +99,8 @@ export interface Config {
     questions: QuestionsSelect<false> | QuestionsSelect<true>;
     exams: ExamsSelect<false> | ExamsSelect<true>;
     results: ResultsSelect<false> | ResultsSelect<true>;
-    'exam-papers': ExamPapersSelect<false> | ExamPapersSelect<true>;
     submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -652,6 +652,7 @@ export interface User {
   name: string;
   roles?: ('admin' | 'teacher' | 'student')[] | null;
   active?: boolean | null;
+  tags?: (number | Tag)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -662,6 +663,20 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  name: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  description?: string | null;
+  createdBy?: (number | User)[] | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -733,6 +748,7 @@ export interface Question {
     [k: string]: unknown;
   } | null;
   createdBy?: (number | User)[] | null;
+  tags?: (number | Tag)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -769,6 +785,7 @@ export interface Exam {
   startDate: string;
   endDate: string;
   createdBy?: (number | User)[] | null;
+  tags?: (number | Tag)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -779,7 +796,7 @@ export interface Exam {
  */
 export interface Result {
   id: number;
-  examPaper: number | ExamPaper;
+  exam: number | Exam;
   student: number | User;
   submission: number | Submission;
   score: number;
@@ -794,37 +811,11 @@ export interface Result {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "exam-papers".
- */
-export interface ExamPaper {
-  id: number;
-  title: string;
-  description?: string | null;
-  duration: number;
-  totalMarks: number;
-  startTime: string;
-  endTime: string;
-  questions: {
-    questionText: string;
-    options: {
-      text: string;
-      isCorrect: boolean;
-      id?: string | null;
-    }[];
-    marks: number;
-    id?: string | null;
-  }[];
-  isActive?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions".
  */
 export interface Submission {
   id: number;
-  examPaper: number | ExamPaper;
+  exam: number | Exam;
   student: number | User;
   answers?:
     | {
@@ -999,12 +990,12 @@ export interface PayloadLockedDocument {
         value: number | Result;
       } | null)
     | ({
-        relationTo: 'exam-papers';
-        value: number | ExamPaper;
-      } | null)
-    | ({
         relationTo: 'submissions';
         value: number | Submission;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: number | Tag;
       } | null)
     | ({
         relationTo: 'search';
@@ -1287,6 +1278,7 @@ export interface UsersSelect<T extends boolean = true> {
   name?: T;
   roles?: T;
   active?: T;
+  tags?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1345,6 +1337,7 @@ export interface QuestionsSelect<T extends boolean = true> {
   difficulty?: T;
   explanation?: T;
   createdBy?: T;
+  tags?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1363,6 +1356,7 @@ export interface ExamsSelect<T extends boolean = true> {
   startDate?: T;
   endDate?: T;
   createdBy?: T;
+  tags?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1372,7 +1366,7 @@ export interface ExamsSelect<T extends boolean = true> {
  * via the `definition` "results_select".
  */
 export interface ResultsSelect<T extends boolean = true> {
-  examPaper?: T;
+  exam?: T;
   student?: T;
   submission?: T;
   score?: T;
@@ -1387,39 +1381,10 @@ export interface ResultsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "exam-papers_select".
- */
-export interface ExamPapersSelect<T extends boolean = true> {
-  title?: T;
-  description?: T;
-  duration?: T;
-  totalMarks?: T;
-  startTime?: T;
-  endTime?: T;
-  questions?:
-    | T
-    | {
-        questionText?: T;
-        options?:
-          | T
-          | {
-              text?: T;
-              isCorrect?: T;
-              id?: T;
-            };
-        marks?: T;
-        id?: T;
-      };
-  isActive?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions_select".
  */
 export interface SubmissionsSelect<T extends boolean = true> {
-  examPaper?: T;
+  exam?: T;
   student?: T;
   answers?:
     | T
@@ -1431,6 +1396,19 @@ export interface SubmissionsSelect<T extends boolean = true> {
   startTime?: T;
   submittedAt?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  slugLock?: T;
+  description?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }

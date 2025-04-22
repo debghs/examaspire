@@ -34,7 +34,7 @@ const Nav: React.FC<NavProps> = ({ navItems, logo }) => {
           <div className="size-4">
             {logo ? <Image src={logo} alt="Logo" width={16} height={16} /> : <LogoIcon />}
           </div>
-          <h2 className="text-lg font-bold">AGK Sangeet</h2>
+          <h2 className="text-lg font-bold">examaspire</h2>
         </Link>
 
         {/* Desktop Navigation */}
