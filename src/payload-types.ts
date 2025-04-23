@@ -781,7 +781,7 @@ export interface Exam {
    */
   duration: number;
   totalMarks: number;
-  status: 'draft' | 'published' | 'archived';
+  status: 'draft' | 'published' | 'archived' | 'virtual';
   startDate: string;
   endDate: string;
   slug?: string | null;

@@ -65,6 +65,7 @@ export const Exams: CollectionConfig = {
         { label: 'Draft', value: 'draft' },
         { label: 'Published', value: 'published' },
         { label: 'Archived', value: 'archived' },
+        { label: 'Virtual', value: 'virtual' },
       ],
     },
     {
