@@ -87,6 +87,7 @@ export const Exams: CollectionConfig = {
         },
       },
     },
+    ...slugField('title'),
     createdByField,
     {
       name: 'tags',

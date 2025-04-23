@@ -784,6 +784,8 @@ export interface Exam {
   status: 'draft' | 'published' | 'archived';
   startDate: string;
   endDate: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
   createdBy?: (number | User)[] | null;
   tags?: (number | Tag)[] | null;
   updatedAt: string;
@@ -1355,6 +1357,8 @@ export interface ExamsSelect<T extends boolean = true> {
   status?: T;
   startDate?: T;
   endDate?: T;
+  slug?: T;
+  slugLock?: T;
   createdBy?: T;
   tags?: T;
   updatedAt?: T;
