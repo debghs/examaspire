@@ -25,7 +25,7 @@ const renderDescription = (description: any) => {
 export function ExamCard({ exam, className = '' }: ExamCardProps) {
   return (
     <Link 
-      href={`/exams/${exam.id}`} 
+      href={`/exams/${exam.slug}`} 
       className={`${className} block hover:shadow-md transition-shadow`}
     >
       <div className="flex flex-col md:flex-row gap-4 p-4 border border-gray-200 rounded-lg">

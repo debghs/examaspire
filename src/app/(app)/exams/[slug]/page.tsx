@@ -18,7 +18,7 @@ export default async function ExamPage({ params }: { params: Promise<{ slug: str
     const exam = await payload.find({
       collection: 'exams',
       where: {
-        id: {
+        slug: {
           equals: slug,
         },
         status: {
