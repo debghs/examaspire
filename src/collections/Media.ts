@@ -17,9 +17,9 @@ const preventMediaDeletion = preventDeletionFactory(
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  // upload: {
-  //   mimeTypes: ['image/*', 'audio/*'],
-  // },
+  upload: {
+    mimeTypes: ['image/*', 'audio/*'],
+  },
   access: {
     read: () => true,
     delete: isAdmin,

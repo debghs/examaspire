@@ -96,6 +96,15 @@ export const Exams: CollectionConfig = {
       relationTo: 'tags',
       hasMany: true,
     },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+      admin: {
+        description: 'Cover image for the exam'
+      },
+    },
   ],
   hooks: {
     afterChange: [createRevalidateHook((doc) => [`/exams`, `/exams/${doc.id}`])],

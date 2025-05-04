@@ -1,6 +1,6 @@
 import { createdByField } from '@/fields/createdBy'
 import { slugField } from '@/fields/slug'
-import { isVideoContentCreator, isVideoContentCreatorOrSelf } from '@/hooks/payload/accessControl'
+import { isTeacher, isTeacherOrSelf } from '@/hooks/payload/accessControl'
 import { CollectionConfig, CollectionSlug, FieldHook } from 'payload'
 import { createRevalidateHook, createRevalidateDeleteHook } from '@/hooks/revalidate'
 
@@ -19,8 +19,8 @@ export const Videos: CollectionConfig = {
     useAsTitle: 'title',
   },
   access: {
-    create: isVideoContentCreator,
-    read: isVideoContentCreatorOrSelf,
+    create: isTeacher,
+    read: isTeacherOrSelf,
     // delete: isAdmin,
   },
   fields: [
@@ -45,22 +45,22 @@ export const Videos: CollectionConfig = {
       relationTo: 'media',
       required: true,
     },
-    {
-      name: 'raag',
-      type: 'relationship',
-      relationTo: 'raags' as CollectionSlug,
-    },
+    // {
+    //   name: 'raag',
+    //   type: 'relationship',
+    //   relationTo: 'raags' as CollectionSlug,
+    // },
     {
       name: 'videoLink',
       type: 'text',
       required: true,
     },
-    {
-      name: 'subheading',
-      type: 'relationship',
-      relationTo: 'subheadings' as CollectionSlug,
-      required: true,
-    },
+    // {
+    //   name: 'subheading',
+    //   type: 'relationship',
+    //   relationTo: 'subheadings' as CollectionSlug,
+    //   required: true,
+    // },
     {
       name: 'tags',
       type: 'array',
@@ -72,13 +72,13 @@ export const Videos: CollectionConfig = {
       ],
       required: true,
     },
-    {
-      name: 'singer',
-      type: 'relationship',
-      relationTo: 'raagSingers' as CollectionSlug,
-      required: true,
-      hasMany: true,
-    },
+    // {
+    //   name: 'singer',
+    //   type: 'relationship',
+    //   relationTo: 'raagSingers' as CollectionSlug,
+    //   required: true,
+    //   hasMany: true,
+    // },
     {
       name: 'description',
       type: 'richText',
@@ -89,52 +89,52 @@ export const Videos: CollectionConfig = {
   ],
   hooks: {
     afterChange: [
-      async (args) => {
-        const { doc, req } = args
+      // async (args) => {
+      //   const { doc, req } = args
 
-        let singerSlugs: string[] = []
-        if (Array.isArray(doc.singer)) {
-          const singerPromises = doc.singer.map((singerId: number) =>
-            req.payload.findByID({
-              collection: 'raagSingers',
-              id: singerId,
-            }),
-          )
-          const singers = await Promise.all(singerPromises)
-          singerSlugs = singers.map((singer) => singer?.slug).filter(Boolean)
-        }
+        // let singerSlugs: string[] = []
+        // if (Array.isArray(doc.singer)) {
+        //   const singerPromises = doc.singer.map((singerId: number) =>
+        //     req.payload.findByID({
+        //       collection: 'raagSingers',
+        //       id: singerId,
+        //     }),
+        //   )
+        //   const singers = await Promise.all(singerPromises)
+        //   singerSlugs = singers.map((singer) => singer?.slug).filter(Boolean)
+        // }
 
-        return createRevalidateHook((doc) => [
-          `/video`,
-          `/video/${doc.slug}`,
-          `/singer`,
-          ...singerSlugs.map((slug) => `/singer/${slug}`),
-        ])(args)
-      },
+      //   return createRevalidateHook((doc) => [
+      //     `/video`,
+      //     `/video/${doc.slug}`,
+      //     `/singer`,
+      //     ...singerSlugs.map((slug) => `/singer/${slug}`),
+      //   ])(args)
+      // },
     ],
     afterDelete: [
-      async (args) => {
-        const { doc, req } = args
+      // async (args) => {
+      //   const { doc, req } = args
 
-        let singerSlugs: string[] = []
-        if (Array.isArray(doc.singer)) {
-          const singerPromises = doc.singer.map((singerId: number) =>
-            req.payload.findByID({
-              collection: 'raagSingers',
-              id: singerId,
-            }),
-          )
-          const singers = await Promise.all(singerPromises)
-          singerSlugs = singers.map((singer) => singer?.slug).filter(Boolean)
-        }
+      //   let singerSlugs: string[] = []
+      //   if (Array.isArray(doc.singer)) {
+      //     const singerPromises = doc.singer.map((singerId: number) =>
+      //       req.payload.findByID({
+      //         collection: 'raagSingers',
+      //         id: singerId,
+      //       }),
+      //     )
+      //     const singers = await Promise.all(singerPromises)
+      //     singerSlugs = singers.map((singer) => singer?.slug).filter(Boolean)
+      //   }
 
-        return createRevalidateDeleteHook((doc) => [
-          `/video`,
-          `/video/${doc.slug}`,
-          `/singer`,
-          ...singerSlugs.map((slug) => `/singer/${slug}`),
-        ])(args)
-      },
+      //   return createRevalidateDeleteHook((doc) => [
+      //     `/video`,
+      //     `/video/${doc.slug}`,
+      //     `/singer`,
+      //     ...singerSlugs.map((slug) => `/singer/${slug}`),
+      //   ])(args)
+      // },
     ],
   },
 }

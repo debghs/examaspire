@@ -1,5 +1,5 @@
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
-import { s3Storage } from '@payloadcms/storage-s3'
+// import { s3Storage } from '@payloadcms/storage-s3'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { getServerSideURL } from '@/utilities/getURL'
 import {
@@ -122,32 +122,32 @@ export const pluginsList = [
       },
     },
   }),
-  s3Storage({
-    collections: {
-      media: {
-        prefix: 'media',
-        generateFileURL: ({ prefix, filename }) =>
-          `${process.env.S3_CDN_URL}/${prefix}/${filename}`,
-      },
-      classicalMedia: {
-        prefix: 'classical',
-        generateFileURL: ({ prefix, filename }) =>
-          `${process.env.S3_CDN_URL}/${prefix}/${filename}`,
-      },
-      bollywoodMedia: {
-        prefix: 'bollywood',
-        generateFileURL: ({ prefix, filename }) =>
-          `${process.env.S3_CDN_URL}/${prefix}/${filename}`,
-      },
-    },
-    config: {
-      endpoint: process.env.S3_ENDPOINT,
-      region: process.env.S3_REGION,
-      credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY as string,
-        secretAccessKey: process.env.S3_SECRET_KEY as string,
-      },
-    },
-    bucket: process.env.S3_BUCKET_NAME as string,
-  }),
+  // s3Storage({
+  //   collections: {
+  //     media: {
+  //       prefix: 'media',
+  //       generateFileURL: ({ prefix, filename }) =>
+  //         `${process.env.S3_CDN_URL}/${prefix}/${filename}`,
+  //     },
+  //     classicalMedia: {
+  //       prefix: 'classical',
+  //       generateFileURL: ({ prefix, filename }) =>
+  //         `${process.env.S3_CDN_URL}/${prefix}/${filename}`,
+  //     },
+  //     bollywoodMedia: {
+  //       prefix: 'bollywood',
+  //       generateFileURL: ({ prefix, filename }) =>
+  //         `${process.env.S3_CDN_URL}/${prefix}/${filename}`,
+  //     },
+  //   },
+  //   config: {
+  //     endpoint: process.env.S3_ENDPOINT,
+  //     region: process.env.S3_REGION,
+  //     credentials: {
+  //       accessKeyId: process.env.S3_ACCESS_KEY as string,
+  //       secretAccessKey: process.env.S3_SECRET_KEY as string,
+  //     },
+  //   },
+  //   bucket: process.env.S3_BUCKET_NAME as string,
+  // }),
 ]

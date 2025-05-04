@@ -1,5 +1,6 @@
 import { Access, CollectionConfig } from 'payload'
 import { hasRole } from '@/hooks/payload/accessControl'
+import { slugField } from '@/fields/slug'
 
 const isTeacherOrAdmin: Access = ({ req: { user } }) => {
   if (hasRole(user, 'admin') || hasRole(user, 'teacher')) return true
@@ -11,7 +12,7 @@ const canViewResult: Access = ({ req: { user } }) => {
   if (hasRole(user, 'student')) {
     return {
       'student.id': {
-        equals: user.id,
+        equals: user?.id,
       },
     }
   }
@@ -82,6 +83,7 @@ export const Results: CollectionConfig = {
       type: 'date',
       required: true,
     },
+    ...slugField('displayTitle'),
     {
       name: 'displayTitle',
       type: 'text',
@@ -90,7 +92,7 @@ export const Results: CollectionConfig = {
       },
       hooks: {
         beforeChange: [({ data }) => {
-          if (data.exam && data.student) {
+          if (data?.exam && data.student) {
             return `${data.exam.title} - ${data.student.name}`
           }
           return 'Untitled Result'

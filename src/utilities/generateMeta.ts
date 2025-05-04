@@ -2,18 +2,12 @@ import type { Metadata } from 'next'
 import type {
   Media,
   Page,
-  Blog,
   Config,
-  Raag,
-  BollywoodSong,
-  Video,
-  Taal,
-  RaagSinger,
-  Actor,
-  Lyricist,
-  MusicDirector,
-  BollywoodSinger,
-  SongCategory,
+  Exam,
+  Question,
+  Result,
+  Submission,
+  User
 } from '../payload-types'
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
@@ -32,34 +26,18 @@ export const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null
 
 type MetaDoc =
   | Page
-  | Blog
-  | BollywoodSong
-  | BollywoodSinger
-  | Raag
-  | Taal
-  | RaagSinger
-  | Video
-  | Actor
-  | Lyricist
-  | MusicDirector
-  | SongCategory
+  | Exam
+  | Result
+  | Submission
+  | Question
 
 interface GenerateMetaArgs {
   doc: MetaDoc | null
   type?:
-    | 'blog'
-    | 'bollywood-songs'
-    | 'b-actor'
-    | 'b-category'
-    | 'b-lyricist'
-    | 'b-music-director'
-    | 'b-raag'
-    | 'b-singer'
-    | 'b-taal'
-    | 'raag'
-    | 'singer'
-    | 'taal'
-    | 'video'
+    | 'exam'
+    | 'result'
+    | 'submission'
+    | 'question'
     | 'page'
 }
 
@@ -113,37 +91,21 @@ const createMetadata = ({
   }
 }
 
-// Keep only the necessary type guards
-const isBollywoodSong = (doc: MetaDoc): doc is BollywoodSong => {
-  return 'movieName' in doc && 'year' in doc && 'singer' in doc
+// Type guards for exam-related types
+const isExam = (doc: MetaDoc): doc is Exam => {
+  return 'questions' in doc && 'duration' in doc && 'totalMarks' in doc
 }
 
-const isRaag = (doc: MetaDoc): doc is Raag => {
-  return 'thaat' in doc && 'time' in doc && 'vaadi' in doc
+const isResult = (doc: MetaDoc): doc is Result => {
+  return 'score' in doc && 'percentage' in doc && 'correctAnswers' in doc
 }
 
-const isTaal = (doc: MetaDoc): doc is Taal => {
-  return 'matra' in doc && 'taali' in doc && 'khaali' in doc
+const isSubmission = (doc: MetaDoc): doc is Submission => {
+  return 'answers' in doc && 'startTime' in doc && 'student' in doc
 }
 
 const isPage = (doc: MetaDoc): doc is Page => {
-  return 'meta' in doc && !('movieName' in doc) && !('thaat' in doc) && !('matra' in doc)
-}
-
-const isBlog = (doc: MetaDoc): doc is Blog => {
-  return 'content' in doc && 'coverImage' in doc && 'excerpt' in doc
-}
-
-const isVideo = (doc: MetaDoc): doc is Video => {
-  return 'videoLink' in doc && 'singer' in doc && !('movieName' in doc)
-}
-
-const isBollywoodIndividual = (doc: MetaDoc): doc is BollywoodSinger => {
-  return 'gender' in doc && 'name' in doc && !('movieName' in doc)
-}
-
-const isSongCategory = (doc: MetaDoc): doc is SongCategory => {
-  return 'name' in doc && !('gender' in doc) && !('movieName' in doc) && !('thaat' in doc)
+  return 'meta' in doc && !('questions' in doc) && !('score' in doc) && !('answers' in doc)
 }
 
 // Helper function to safely get image URL
@@ -152,7 +114,7 @@ const getDocImage = (doc: MetaDoc): Media | number | null | undefined => {
     return doc.image
   }
   if ('coverImage' in doc && doc.coverImage) {
-    return doc.coverImage
+    return doc.coverImage as Media | number | null | undefined
   }
   return null
 }
@@ -165,7 +127,7 @@ export const generateMeta = async (args: GenerateMetaArgs): Promise<Metadata> =>
   }
 
   const ogImage = getImageURL(getDocImage(doc))
-  const baseTitle = 'AGK Sangeet'
+  const baseTitle = 'ExamAspire'
   const slug = doc?.slug || ''
 
   // Helper function to get names from array of objects or numbers
@@ -199,7 +161,7 @@ export const generateMeta = async (args: GenerateMetaArgs): Promise<Metadata> =>
           ? doc.meta.description
           : doc.meta?.description
             ? richTextToPlainText(doc.meta.description)
-            : descriptionText || 'Learn Indian Classical Music Online'
+            : descriptionText || 'Prepare for your exams with confidence'
       const metaImage = getImageURL(doc.meta?.image || getDocImage(doc))
 
       return createMetadata({
@@ -210,239 +172,68 @@ export const generateMeta = async (args: GenerateMetaArgs): Promise<Metadata> =>
       })
     }
 
-    case 'b-actor':
-    case 'b-lyricist':
-    case 'b-music-director':
-    case 'b-singer': {
-      if (!isBollywoodIndividual(doc)) return {}
-      const title = doc.name ? `Bollywood Songs by ${doc.name} | ${baseTitle}` : baseTitle
-      const description =
-        descriptionText ||
-        `Learn the notation, lyrics, raag, taal, and more of songs by ${doc.name.toLowerCase()} related content.`
-      const keywords = [
-        'indian classical music',
-        doc.name,
-        'bollywood songs',
-        'bollywood music',
-        'bollywood singers',
-        'bollywood song notation',
-        'bollywood song lyrics',
-        'bollywood song raag',
-        'bollywood song taal',
-        `bollywood songs by ${doc.name}`,
-      ].join(', ')
-
-      return createMetadata({
-        title,
-        description,
-        keywords,
-        ogImage,
-        urlPath: `/bollywood-songs/${type.replace('b-', '')}/${slug}`,
-      })
-    }
-
-    case 'b-category': {
-      if (!isSongCategory(doc)) return {}
-      const title = doc.name ? `${doc.name} Bollywood Songs | ${baseTitle}` : baseTitle
-      const description =
-        descriptionText ||
-        `Comprehensive list of ${doc.name.toLowerCase() || 'music'} songs in Bollywood with their notation, raag, taal and lyrics!`
-      const keywords = [
-        'indian classical music',
-        doc.name,
-        `${doc.name} bollywood songs`,
-        `${doc.name} bollywood songs list`,
-        `${doc.name} type of bollywood songs`,
-      ].join(', ')
-
-      return createMetadata({
-        title,
-        description,
-        keywords,
-        ogImage,
-        urlPath: `/bollywood-songs/category/${slug}`,
-      })
-    }
-
-    case 'b-raag':
-    case 'b-taal': {
-      if (type === 'b-raag') {
-        if (!isRaag(doc)) return {}
-        const name = doc.name
-        const title = name ? `Bollywood Songs in Raag ${name} | ${baseTitle}` : baseTitle
-        const description =
-          descriptionText ||
-          `Comprehensive list of Bollywood songs in ${name.toLowerCase() || 'music'} with their notation, raag, taal and lyrics!`
-        const keywords = [
-          'indian classical music',
-          name,
-          `raag ${name} bollywood songs`,
-          `Bollywood songs in raag ${name}`,
-          `raag ${name} bollywood songs list`,
-        ].join(', ')
-
-        return createMetadata({
-          title,
-          description,
-          keywords,
-          ogImage,
-          urlPath: `/bollywood-songs/raag/${slug}`,
-        })
-      } else {
-        if (!isTaal(doc)) return {}
-        const name = doc.name
-        const title = name ? `Bollywood Songs in ${name} Taal | ${baseTitle}` : baseTitle
-        const description =
-          descriptionText ||
-          `Comprehensive list of Bollywood songs in ${name.toLowerCase() || 'music'} with their notation, raag, taal and lyrics!`
-        const keywords = [
-          'indian classical music',
-          name,
-          `taal ${name} bollywood songs`,
-          `Bollywood songs in taal ${name}`,
-          `taal ${name} bollywood songs list`,
-        ].join(', ')
-
-        return createMetadata({
-          title,
-          description,
-          keywords,
-          ogImage,
-          urlPath: `/bollywood-songs/taal/${slug}`,
-        })
-      }
-    }
-
-    case 'raag': {
-      if (!isRaag(doc)) return {}
-      const title = doc.name ? `Raag ${doc.name} | ${baseTitle}` : baseTitle
-      const description =
-        descriptionText ||
-        `Learn about Raag ${doc.name}, its characteristics, and musical compositions along with a list of bollywood songs in raag ${doc.name}.`
-      const keywords = [
-        'indian classical music',
-        'raag',
-        `Raag ${doc.name}`,
-        `Thaat ${doc.thaat}`,
-        doc.time,
-        `${doc.jaati} Raag`,
-        `Vaadi ${doc.vaadi}`,
-        `Samvaadi ${doc.samvaadi}`,
-        `Bollywood songs in raag ${doc.name}`,
-        `Bandish in raag ${doc.name}`,
-        `Taan in raag ${doc.name}`,
-        `Vilambit in raag ${doc.name}`,
-        `Chhota Khayal in raag ${doc.name}`,
-      ]
-        .filter(Boolean)
-        .join(', ')
-
-      return createMetadata({
-        title,
-        description,
-        keywords,
-        ogImage,
-        urlPath: `/raag/${slug}`,
-      })
-    }
-
-    case 'taal': {
-      if (!isTaal(doc)) return {}
-      const title = doc.name ? `Taal ${doc.name} | ${baseTitle}` : baseTitle
-      const description =
-        descriptionText ||
-        `Learn about Taal ${doc.name}, its characteristics, and musical compositions in this taal.`
-      const keywords = ['indian classical music', 'taal', `${doc.name} Taal`]
-        .filter(Boolean)
-        .join(', ')
-
-      return createMetadata({
-        title,
-        description,
-        keywords,
-        ogImage,
-        urlPath: `/taal/${slug}`,
-      })
-    }
-
-    case 'bollywood-songs': {
-      if (!isBollywoodSong(doc)) return {}
-      const title = doc.name
-        ? `${doc.name} | ${doc.movieName} (${doc.year}) | ${baseTitle}`
-        : baseTitle
-      const description =
-        descriptionText ||
-        `Learn the notation, lyrics, raag, taal, and more of ${doc.name} from ${doc.movieName} (${doc.year}) by ${getNames(doc.singer).join(', ')}.`
-      const keywords = [
-        'bollywood songs',
-        'music notation',
-        doc.name,
-        `${doc.name} notation`,
-        `${doc.name} lyrics`,
-        `${doc.name} raag`,
-        `${doc.name} taal`,
-        doc.movieName,
-        doc.year,
-        ...getNames(doc.singer),
-        ...getNames(doc.musicDirector),
-        ...getNames(doc.lyricist),
-        typeof doc.raag === 'object' && 'name' in doc.raag ? doc.raag.name : '',
-        typeof doc.taal === 'object' && 'name' in doc.taal ? doc.taal.name : '',
-      ]
-        .filter(Boolean)
-        .join(', ')
-
-      return createMetadata({
-        title,
-        description,
-        keywords,
-        ogImage,
-        urlPath: `/bollywood-songs/${slug}`,
-      })
-    }
-
-    case 'singer': {
-      const singer = doc as RaagSinger
-      const title = singer.name ? `${singer.name} | ${baseTitle}` : baseTitle
-      const description =
-        descriptionText ||
-        `Learn more about Singer - ${singer.name}, her/his contributions to Indian classical music and a list of their videos.`
-      const keywords = ['indian classical music', 'singer', `${singer.name}`]
-        .filter(Boolean)
-        .join(', ')
-
-      return createMetadata({
-        title,
-        description,
-        keywords,
-        ogImage,
-        urlPath: `/singer/${slug}`,
-      })
-    }
-
-    case 'video': {
-      if (!isVideo(doc)) return {}
+    case 'exam': {
+      if (!isExam(doc)) return {}
       const title = doc.title ? `${doc.title} | ${baseTitle}` : baseTitle
       const description =
         descriptionText ||
-        `Watch ${doc.title} - A musical performance & training video by ${getNames(doc.singer).join(', ')}.`
+        `Prepare for ${doc.title} - ${doc.duration} minutes exam with ${doc.totalMarks} total marks.`
       const keywords = [
-        'learn indian classical music',
-        'music video',
+        'online exam',
+        'exam preparation',
         doc.title,
-        ...getNames(doc.singer),
-        doc.raag && typeof doc.raag === 'object' && 'name' in doc.raag ? doc.raag.name : '',
+        'practice test',
+        'mock exam',
+        'exam portal',
         ...(doc.tags || []),
-      ]
-        .filter(Boolean)
-        .join(', ')
+      ].filter(Boolean).join(', ')
 
       return createMetadata({
         title,
         description,
         keywords,
         ogImage,
-        urlPath: `/videos/${slug}`,
+        urlPath: `/exams/${slug}`,
+      })
+    }
+
+    case 'result': {
+      if (!isResult(doc)) return {}
+      const title = `Exam Result | ${baseTitle}`
+      const description = descriptionText || `View your exam results and performance analysis.`
+      const keywords = [
+        'exam results',
+        'score analysis',
+        'performance report',
+        'exam feedback',
+      ].join(', ')
+
+      return createMetadata({
+        title,
+        description,
+        keywords,
+        ogImage,
+        urlPath: `/results/${slug}`,
+      })
+    }
+
+    case 'submission': {
+      if (!isSubmission(doc)) return {}
+      const title = `Exam Submission | ${baseTitle}`
+      const description = descriptionText || `Review your exam submission and answers.`
+      const keywords = [
+        'exam submission',
+        'answer review',
+        'submitted answers',
+        'exam responses',
+      ].join(', ')
+
+      return createMetadata({
+        title,
+        description,
+        keywords,
+        ogImage,
+        urlPath: `/submissions/${slug}`,
       })
     }
 

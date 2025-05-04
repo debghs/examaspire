@@ -143,6 +143,7 @@ export const Questions: CollectionConfig = {
         description: 'Explanation of the correct answer',
       },
     },
+    ...slugField('title'),
     createdByField,
     {
       name: 'tags',

@@ -2,6 +2,7 @@ import { createdByField } from '@/fields/createdBy'
 import { hasRole, isAdmin, isAdminFieldLevel } from '@/hooks/payload/accessControl'
 import type { Access, CollectionConfig } from 'payload'
 import { APIError } from 'payload'
+import { slugField } from '@/fields/slug'
 
 // Access Control for Users Collection
 const isAdminOrActiveSelf: Access = ({ req: { user } }) => {
@@ -96,6 +97,8 @@ const Users: CollectionConfig = {
       relationTo: 'tags',
       hasMany: true,
     },
+    createdByField,
+    ...slugField('title'),
   ],
   hooks: {
     afterLogin: [

@@ -1,5 +1,6 @@
 import { Access, CollectionConfig } from 'payload'
 import { hasRole } from '@/hooks/payload/accessControl'
+import { slugField } from '@/fields/slug'
 
 const isTeacherOrAdmin: Access = ({ req: { user } }) => {
   if (hasRole(user, 'admin') || hasRole(user, 'teacher')) return true
@@ -11,7 +12,7 @@ const canSubmitOrView: Access = ({ req: { user } }) => {
   if (hasRole(user, 'student')) {
     return {
       'student.id': {
-        equals: user.id,
+        equals: user?.id,
       },
     }
   }
@@ -87,5 +88,6 @@ export const Submissions: CollectionConfig = {
         },
       ],
     },
+    ...slugField('displayTitle'),
   ],
 }

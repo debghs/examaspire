@@ -3,9 +3,8 @@ import { Access, FieldAccess } from 'payload'
 
 export type UserTypes =
   | 'admin'
-  | 'bollywoodContentCreator'
-  | 'classicalContentCreator'
-  | 'videoContentCreator'
+  | 'teacher'
+  | 'student'
 
 // Generic function that works for both collection and field level
 export const hasRole = (user: User | null, role: UserTypes): boolean => {
@@ -37,25 +36,22 @@ export const isAdmin: Access<User> = ({ req: { user } }) => {
   return hasRole(user, 'admin')
 }
 
-export const isBollywoodContentCreator: Access<User> = ({ req: { user } }) => {
-  return hasRole(user, 'bollywoodContentCreator') || hasRole(user, 'admin')
+export const isTeacher: Access<User> = ({ req: { user } }) => {
+  return hasRole(user, 'teacher') || hasRole(user, 'admin')
 }
 
-export const isClassicalContentCreator: Access<User> = ({ req: { user } }) => {
-  return hasRole(user, 'classicalContentCreator') || hasRole(user, 'admin')
+export const isStudent: Access<User> = ({ req: { user } }) => {
+  return hasRole(user, 'student') || hasRole(user, 'admin')
 }
 
-export const isVideoContentCreator: Access<User> = ({ req: { user } }) => {
-  return hasRole(user, 'videoContentCreator') || hasRole(user, 'admin')
-}
 
-export const isBollywoodContentCreatorOrSelf: Access<User> = ({ req: { user } }) => {
+export const isTeacherOrSelf: Access<User> = ({ req: { user } }) => {
   if (hasRole(user, 'admin')) {
     return true
   }
 
   // Regular users can only read their own orders
-  if (hasRole(user, 'bollywoodContentCreator')) {
+  if (hasRole(user, 'teacher')) {
     return {
       createdBy: {
         equals: user?.id,
@@ -65,28 +61,13 @@ export const isBollywoodContentCreatorOrSelf: Access<User> = ({ req: { user } })
   return false
 }
 
-export const isClassicalContentCreatorOrSelf: Access<User> = ({ req: { user } }) => {
+export const isStudentOrSelf: Access<User> = ({ req: { user } }) => {
   if (hasRole(user, 'admin')) {
     return true
   }
 
   // Regular users can only read their own orders
-  if (hasRole(user, 'classicalContentCreator')) {
-    return {
-      createdBy: {
-        equals: user?.id,
-      },
-    }
-  }
-  return false
-}
-
-export const isVideoContentCreatorOrSelf: Access<User> = ({ req: { user } }) => {
-  if (hasRole(user, 'admin')) {
-    return true
-  }
-
-  if (hasRole(user, 'videoContentCreator')) {
+  if (hasRole(user, 'student')) {
     return {
       createdBy: {
         equals: user?.id,
@@ -101,10 +82,10 @@ export const isAdminFieldLevel: FieldAccess = ({ req: { user } }) => {
   return hasRole(user, 'admin')
 }
 
-export const isBollywoodContentCreatorFieldLevel: FieldAccess = ({ req: { user } }) => {
-  return hasRole(user, 'bollywoodContentCreator') || hasRole(user, 'admin')
+export const isTeacherFieldLevel: FieldAccess = ({ req: { user } }) => {
+  return hasRole(user, 'teacher') || hasRole(user, 'admin')
 }
 
-export const isClassicalContentCreatorFieldLevel: FieldAccess = ({ req: { user } }) => {
-  return hasRole(user, 'classicalContentCreator') || hasRole(user, 'admin')
+export const isStudentFieldLevel: FieldAccess = ({ req: { user } }) => {
+  return hasRole(user, 'student') || hasRole(user, 'admin')
 }
